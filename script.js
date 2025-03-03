@@ -120,7 +120,14 @@ function fight(enemy){
         }
     })
     heavyAttackButton.addEventListener("click", ()=>{
-        mc.attack(enemy)
+        heavyAttackButton.disabled = true;
+        mc.attack(enemy, {name: "Heavy Attack", multiply: 1.5, effects: []})
+        if(isInBattle){
+            setTimeout(()=>{
+                enemy.randAttack(mc)
+                heavyAttackButton.disabled = false;
+            },1000)
+        }
     })
 }
 
