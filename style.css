@@ -1,0 +1,28 @@
+body,html {
+    background-color: aqua;
+    margin: 0;
+    padding: 0;
+}
+
+.logText {
+    color: white;
+    background-color: brown;
+    font-size: 2em;
+}
+
+#victoryText {
+    color: white;
+    background-color: brown;
+    font-size: 2em;
+}
+
+.game {
+    height: 100vh;
+}
+.visual {
+    height: 70%;
+    border: 3px solid plum;
+    width: 100%;
+    margin-bottom: 30px;
+    align-items: center;
+}
