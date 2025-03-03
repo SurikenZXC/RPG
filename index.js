@@ -1,6 +1,16 @@
 const attackButton = document.getElementById("attack")
 const battleStart = document.getElementById("battleStart")
 
+function showHP(){
+    console.log(`${mc.currentEnemy.name} HP: ${mc.currentEnemy.hp}`)
+    console.log(`Your HP: ${mc.hp}`)
+}
+
+function showBattleInfo(damage, reciever){
+    console.log(`Damage dealt to ${reciever.name}: ${damage}`)
+    showHP()
+}
+
 class Attack {
     constructor(attackName, multipy, effects){
         this.attackName = attackName;
@@ -20,12 +30,12 @@ class Entity {
     }
     attack(oponent){
         oponent.hp -= this.damage
-        showHP(oponent)
+        showBattleInfo(this.damage,oponent)
     }
     executeSpecialAttack(oponent, attack){
-        showHP(this)
-        oponent.hp -= Math.round(this.damage*attack.multipy)
-        showHP(this)
+        let damage = Math.round(this.damage*attack.multipy)
+        oponent.hp -= damage
+        showBattleInfo(this,oponent)
     }
 }
 
@@ -39,7 +49,8 @@ class Enemy extends Entity {
 
 class Hero extends Entity{
     constructor(...args){
-        super(...args)
+        super(...args);
+        this.currentEnemy;
     }
 }
 
@@ -47,12 +58,10 @@ const attacks = [
     new Attack("Crush Attack",1.6,["injury","bleed"])
 ]
 
-const mc = new Hero("Nuts", "Dragonslayer", 40, 2)
-const firstEnemy = new Enemy(25,attacks[0],"Ornstein", "Morgenstern", 13, 2)
+const mc = new Hero("Nuts", "Dragonslayer", 30, 2)
+const firstEnemy = new Enemy(100,attacks[0],"Ornstein", "Morgenstern", 23, 2)
 
-firstEnemy.executeSpecialAttack(mc,firstEnemy.specialAttack)
-
-console.log(firstEnemy)
+//firstEnemy.executeSpecialAttack(mc,firstEnemy.specialAttack)
 
 battleStart.addEventListener("click", ()=>{
     battleStart.style.display = "none"
@@ -61,28 +70,27 @@ battleStart.addEventListener("click", ()=>{
 })
 
 function fight(enemy){
+    mc.currentEnemy = enemy;
     mc.turn = mc.agility >= enemy.agility ? true : false
+    if(!mc.turn){
+        console.log("Enemy turn:")
+        enemy.attack(mc)
+    }
     attackButton.addEventListener("click", ()=>{
+        attackButton.disabled = true;
+        console.log("Your turn:")
         mc.attack(enemy)
+        setTimeout(()=>{
+            enemy.attack(mc)
+            attackButton.disabled = false;
+        },3000)
+        
+        if(mc.hp <= 0){
+            lose()
+        }else if(enemy.hp <= 0){
+            victory()
+        }
     })
-}
-
-function attack(enemy){
-    if(mc.turn){
-        enemy.hp -= mc.damage
-        console.log(`Enemy HP: ${enemy.hp}`)
-        console.log(`Your HP: ${mc.hp}`)
-    }else{
-        mc.hp -= enemy.damage
-        console.log(`Enemy HP: ${enemy.hp}`)
-        console.log(`Your HP: ${mc.hp}`)
-    }
-    if(mc.hp <= 0){
-        lose()
-    }else if(enemy.hp <= 0){
-        victory()
-    }
-    mc.turn = !mc.turn
 }
 
 function victory(){
@@ -92,8 +100,4 @@ function victory(){
 function lose(){
     console.log("You died!💀")
     document.body.style.display = "none"
-}
-function showHP(oponent){
-    console.log(`Enemy HP: ${oponent.hp}`)
-    console.log(`Your HP: ${mc.hp}`)
 }
